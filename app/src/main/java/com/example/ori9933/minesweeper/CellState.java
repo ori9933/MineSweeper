@@ -1,15 +1,15 @@
 package com.example.ori9933.minesweeper;
 
-interface CellStateChangedListener{
-    void OnChange();
-    void OnEndGame();
+interface ICellStateChangedListener{
+    void onChange();
+    void onEndGame();
 }
 
 public class CellState{
     public static final int MINE_VALUE = -1;
     private CellStatus status;
     private int value;
-    private CellStateChangedListener listener;
+    private ICellStateChangedListener listener;
 
 
 
@@ -23,12 +23,12 @@ public class CellState{
 
     public void raiseStateChanged() {
         if(listener != null)
-            listener.OnChange();
+            listener.onChange();
     }
 
     public void raiseEndGame() {
         if(listener != null)
-            listener.OnEndGame();
+            listener.onEndGame();
     }
 
     public int getValue() {
@@ -39,7 +39,7 @@ public class CellState{
         this.value = value;
     }
 
-    public void register(CellStateChangedListener listener){
+    public void register(ICellStateChangedListener listener){
         this.listener = listener;
     }
 

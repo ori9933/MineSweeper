@@ -23,7 +23,6 @@ public class GridFragment extends Fragment {
         CustomGridAdapter adapter = new CustomGridAdapter(inflater);
         gridview.setAdapter(adapter);
 
-        //getLoaderManager().initLoader(0, null, this);
         return rootView;
     }
 }

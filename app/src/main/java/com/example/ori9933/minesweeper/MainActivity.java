@@ -8,8 +8,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import org.w3c.dom.Text;
+
+public class MainActivity extends AppCompatActivity implements IMinesLeftListener {
+
+    private TextView minesLeftTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,14 +23,10 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        minesLeftTextView = (TextView) findViewById(R.id.mines_left_text);
+
+        GameManager.getInstance().register(this);
+        GameManager.getInstance().newGame();
     }
 
     @Override
@@ -47,5 +48,10 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onMinesChanged(int mines) {
+        minesLeftTextView.setText("Mines Left: " + String.valueOf(mines));
     }
 }

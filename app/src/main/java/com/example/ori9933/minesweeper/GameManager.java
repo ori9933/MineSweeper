@@ -4,14 +4,22 @@ package com.example.ori9933.minesweeper;
 import java.util.Random;
 
 
+interface IMinesLeftListener{
+    void onMinesChanged(int mines);
+}
+
 public class GameManager {
     private static GameManager instance;
-    private final int GAME_SIZE = 10;
+    public static final int GAME_SIZE = 10;
 
     private CellState[][] cells;
     private GameLevel level;
+    private int minesLeft;
+    private IMinesLeftListener minesChangedListener;
+
 
     private GameManager(){
+        setGamesLevel(GameLevel.Easy);
         cells = new  CellState[GAME_SIZE][GAME_SIZE];
         for (int i=0;i<GAME_SIZE;i++){
             for(int j=0;j<GAME_SIZE;j++){
@@ -24,6 +32,14 @@ public class GameManager {
         if(instance == null)
             instance = new GameManager();
         return instance;
+    }
+
+    public void register(IMinesLeftListener listener){
+        this.minesChangedListener = listener;
+    }
+
+    public CellState[][] GetCellsStates(){
+        return cells;
     }
 
     public void setGamesLevel(GameLevel level){
@@ -41,13 +57,22 @@ public class GameManager {
         verifyAndContinueGame(cellState);
     }
 
-    public void addMineToCell(CellState cellState){
-        cellState.setStatus(CellStatus.Mine);
+    public void SetCellMine(CellState cellState){
+        CellStatus currentStatus = cellState.getStatus();
+        if(currentStatus == CellStatus.Initial){
+            cellState.setStatus(CellStatus.Mine);
+            minesLeft--;
+        }
+        else if(currentStatus == CellStatus.Mine){
+            cellState.setStatus(CellStatus.Initial);
+            minesLeft++;
+        }
+        onMinesChanged();
         verifyAndContinueGame(cellState);
     }
 
     private void verifyAndContinueGame(CellState cellState){
-        if(cellState.getError() == CellErrorStatus.None){
+        if(cellState.getError() != CellErrorStatus.Mine){
             cellState.raiseStateChanged();
         }
         else {
@@ -59,11 +84,19 @@ public class GameManager {
         }
     }
 
+    private void onMinesChanged(){
+        if(minesChangedListener != null){
+            minesChangedListener.onMinesChanged(minesLeft);
+        }
+    }
+
     private void calculateCellsValues(){
         for (int i=0;i<GAME_SIZE;i++){
             for(int j=0;j<GAME_SIZE;j++){
-                int surroundingMinesNumber =  getSurroundingMinesNumber(i,j);
-                cells[i][j].setValue(surroundingMinesNumber);
+                if(cells[i][j].getValue() != CellState.MINE_VALUE){
+                    int surroundingMinesNumber =  getSurroundingMinesNumber(i,j);
+                    cells[i][j].setValue(surroundingMinesNumber);
+                }
             }
         }
     }
@@ -71,8 +104,10 @@ public class GameManager {
     private int getSurroundingMinesNumber(int row, int col){
         int sum = 0;
         for(int i = row-1; i<=row+1;i++){
+            if(i<0 || i>=GAME_SIZE)
+                continue;
             for(int j = col-1; j<=col+1;j++){
-                if(i==j || i<0 || j < 0 || row == GAME_SIZE || col == GAME_SIZE)
+                if(i==j || j < 0 || j >= GAME_SIZE)
                     continue;
                 if(cells[i][j].getValue() == CellState.MINE_VALUE){
                     sum++;
@@ -84,6 +119,8 @@ public class GameManager {
 
     private void randomizeMines() {
         int totalMines = getTotalMines();
+        this.minesLeft = totalMines;
+        onMinesChanged();
         int row,col;
         Random rand = new Random();
         while (totalMines > 0){

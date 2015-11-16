@@ -8,50 +8,33 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 
-/**
- * Created by Ori Levron on 15/11/15.
- */
+
 public class CustomGridAdapter extends BaseAdapter {
-    ArrayList<String> list;
+    ArrayList<CellManager> cellManagers;
     private LayoutInflater inflater;
 
 
     public CustomGridAdapter(LayoutInflater inflater){
         this.inflater = inflater;
-        list = new ArrayList<>();
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
-        list.add("123");
+        this.cellManagers = new ArrayList<>();
+
+        CellState[][] cells = GameManager.getInstance().GetCellsStates();
+        for(int i = 0; i < GameManager.GAME_SIZE; i++){
+            for (int j =0; j< GameManager.GAME_SIZE; j++){
+                this.cellManagers.add(new CellManager(cells[i][j]));
+            }
+        }
     }
 
 
     @Override
     public int getCount() {
-        return list.size();
+        return cellManagers.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return cellManagers.get(position);
     }
 
     @Override
@@ -64,8 +47,7 @@ public class CustomGridAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = this.inflater.inflate(R.layout.cell_layout, null);
         }
-        Button button = (Button) convertView.findViewById(R.id.cell_button);
-        button.setText(list.get(position));
+        cellManagers.get(position).setView(convertView);
 
 
         return convertView;
