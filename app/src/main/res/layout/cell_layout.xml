@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:layout_margin="0dp"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
@@ -8,8 +9,8 @@
         android:id="@+id/cell_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:padding="0dp"
         android:layout_margin="0dp"
+        android:minHeight="5dp"
         />
 
     <TextView
@@ -20,6 +21,7 @@
         android:layout_gravity="center"
         android:layout_centerVertical="true"
         android:visibility="invisible"
+        android:layout_margin="0dp"
         />
 
 </RelativeLayout>

@@ -4,8 +4,9 @@ package com.example.ori9933.minesweeper;
 import java.util.Random;
 
 
-interface IMinesLeftListener{
-    void onMinesChanged(int mines);
+interface IGameStatusListener {
+    void onMinesLeftChanged(int mines);
+    void onGameOver(boolean isGameWon);
 }
 
 public class GameManager {
@@ -15,7 +16,7 @@ public class GameManager {
     private CellState[][] cells;
     private GameLevel level;
     private int minesLeft;
-    private IMinesLeftListener minesChangedListener;
+    private IGameStatusListener gameStatusListener;
 
 
     private GameManager(){
@@ -34,8 +35,8 @@ public class GameManager {
         return instance;
     }
 
-    public void register(IMinesLeftListener listener){
-        this.minesChangedListener = listener;
+    public void register(IGameStatusListener listener){
+        this.gameStatusListener = listener;
     }
 
     public CellState[][] GetCellsStates(){
@@ -46,10 +47,22 @@ public class GameManager {
         this.level=level;
     }
 
-    public void newGame(){
+    public void newGame(boolean notify){
         resetCells();
         randomizeMines();
         calculateCellsValues();
+
+        if(notify){
+            updateCells();
+        }
+    }
+
+    private void updateCells() {
+        for (int i=0;i<GAME_SIZE;i++){
+            for(int j=0;j<GAME_SIZE;j++){
+                cells[i][j].raiseStateChanged();
+            }
+        }
     }
 
     public void openCell(CellState cellState){
@@ -74,8 +87,11 @@ public class GameManager {
     private void verifyAndContinueGame(CellState cellState){
         if(cellState.getError() != CellErrorStatus.Mine){
             cellState.raiseStateChanged();
+            verifyGameWon();
         }
         else {
+            onGameOver(false);
+            if(gameStatusListener != null)
             for (int i=0;i<GAME_SIZE;i++){
                 for(int j=0;j<GAME_SIZE;j++){
                     cells[i][j].raiseEndGame();
@@ -84,9 +100,26 @@ public class GameManager {
         }
     }
 
+    private void verifyGameWon(){
+        for (int i=0;i<GAME_SIZE;i++){
+            for(int j=0;j<GAME_SIZE;j++){
+                if(cells[i][j].getStatus() == CellStatus.Initial || cells[i][j].getError() != CellErrorStatus.None){
+                    return;
+                }
+            }
+        }
+        onGameOver(true);
+    }
+
+    private void onGameOver(boolean isGameWon){
+        if(gameStatusListener != null){
+            gameStatusListener.onGameOver(isGameWon);
+        }
+    }
+
     private void onMinesChanged(){
-        if(minesChangedListener != null){
-            minesChangedListener.onMinesChanged(minesLeft);
+        if(gameStatusListener != null){
+            gameStatusListener.onMinesLeftChanged(minesLeft);
         }
     }
 
