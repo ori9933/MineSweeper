@@ -42,12 +42,14 @@ public class CustomGridAdapter extends BaseAdapter {
         return position;
     }
 
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = this.inflater.inflate(R.layout.cell_layout, null);
+            cellManagers.get(position).setView(convertView);
         }
-        cellManagers.get(position).setView(convertView);
+
 
 
         return convertView;

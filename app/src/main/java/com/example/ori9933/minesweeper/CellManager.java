@@ -9,6 +9,7 @@ public class CellManager implements ICellStateChangedListener {
     private CellState cellState;
     private Button button;
     private TextView textView;
+    private View convertView;
 
     public CellManager(CellState cellState){
 
@@ -17,6 +18,10 @@ public class CellManager implements ICellStateChangedListener {
     }
 
     public void setView(View convertView) {
+
+        if(this.convertView != null)
+            return;
+        this.convertView = convertView;
 
         button = (Button) convertView.findViewById(R.id.cell_button);
         textView = (TextView) convertView.findViewById(R.id.cell_text);

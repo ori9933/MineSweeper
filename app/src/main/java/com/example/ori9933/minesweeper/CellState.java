@@ -10,8 +10,14 @@ public class CellState{
     private CellStatus status;
     private int value;
     private ICellStateChangedListener listener;
+    private int row;
+    private int col;
 
+    public CellState(int row, int col){
 
+        this.row = row;
+        this.col = col;
+    }
 
     public CellStatus getStatus() {
         return status;
@@ -58,6 +64,13 @@ public class CellState{
         return CellErrorStatus.None;
     }
 
+    public int getRow() {
+        return row;
+    }
+
+    public int getCol() {
+        return col;
+    }
 }
 
 enum CellErrorStatus{

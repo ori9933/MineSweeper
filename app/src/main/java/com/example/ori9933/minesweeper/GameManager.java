@@ -24,7 +24,7 @@ public class GameManager {
         cells = new  CellState[GAME_SIZE][GAME_SIZE];
         for (int i=0;i<GAME_SIZE;i++){
             for(int j=0;j<GAME_SIZE;j++){
-                cells[i][j] = new CellState();
+                cells[i][j] = new CellState(i,j);
             }
         }
     }
@@ -66,8 +66,44 @@ public class GameManager {
     }
 
     public void openCell(CellState cellState){
-        cellState.setStatus(CellStatus.Opened);
+        if(cellState.getValue() == 0){
+            spreadSurroundingCells(cellState.getRow(),cellState.getCol());
+        }
+        else
+        {
+            cellState.setStatus(CellStatus.Opened);
+        }
+
+        //cellState.setStatus(CellStatus.Opened);
         verifyAndContinueGame(cellState);
+    }
+
+    private void spreadSurroundingCells(int row, int col) {
+        CellState cellState = cells[row][col];
+        CellStatus cellStatus = cellState.getStatus();
+
+        if(cellStatus != CellStatus.Initial)
+            return;
+
+        if(cellState.getValue() > 0){
+            cellState.setStatus(CellStatus.Opened);
+            cellState.raiseStateChanged();
+        }
+        else if(cellState.getValue() == 0){
+            cellState.setStatus(CellStatus.Opened);
+            cellState.raiseStateChanged();
+
+            for(int i = row-1; i<=row+1;i++){
+                if(i<0 || i>=GAME_SIZE)
+                    continue;
+                for(int j = col-1; j<=col+1;j++){
+                    if(j < 0 || j >= GAME_SIZE)
+                        continue;
+                    spreadSurroundingCells(i,j);
+                }
+            }
+        }
+
     }
 
     public void SetCellMine(CellState cellState){
@@ -140,7 +176,7 @@ public class GameManager {
             if(i<0 || i>=GAME_SIZE)
                 continue;
             for(int j = col-1; j<=col+1;j++){
-                if(i==j || j < 0 || j >= GAME_SIZE)
+                if((i==row & j==col) || j < 0 || j >= GAME_SIZE)
                     continue;
                 if(cells[i][j].getValue() == CellState.MINE_VALUE){
                     sum++;
