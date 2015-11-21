@@ -68,9 +68,7 @@ public class CellManager implements ICellStateChangedListener {
                 textView.setVisibility(View.INVISIBLE);
                 imageView.setVisibility(View.GONE);
                 imageButton.setVisibility(View.VISIBLE);
-                imageButton.getLayoutParams().height = button.getHeight() + 20;
                 imageButton.setEnabled(true);
-                //button.setText("*");
                 break;
             case Opened:
                 button.setVisibility(View.INVISIBLE);

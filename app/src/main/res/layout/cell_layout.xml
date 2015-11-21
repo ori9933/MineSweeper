@@ -12,7 +12,6 @@
         android:layout_margin="0dp"
         android:padding="10dp"
         android:minHeight="30dp"
-        android:adjustViewBounds="true"
         />
 
     <ImageButton
