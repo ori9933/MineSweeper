@@ -74,7 +74,6 @@ public class GameManager {
             cellState.setStatus(CellStatus.Opened);
         }
 
-        //cellState.setStatus(CellStatus.Opened);
         verifyAndContinueGame(cellState);
     }
 
@@ -127,12 +126,6 @@ public class GameManager {
         }
         else {
             onGameOver(false);
-            if(gameStatusListener != null)
-            for (int i=0;i<GAME_SIZE;i++){
-                for(int j=0;j<GAME_SIZE;j++){
-                    cells[i][j].raiseEndGame();
-                }
-            }
         }
     }
 
@@ -150,6 +143,12 @@ public class GameManager {
     private void onGameOver(boolean isGameWon){
         if(gameStatusListener != null){
             gameStatusListener.onGameOver(isGameWon);
+        }
+
+        for (int i=0;i<GAME_SIZE;i++){
+            for(int j=0;j<GAME_SIZE;j++){
+                cells[i][j].raiseEndGame();
+            }
         }
     }
 
