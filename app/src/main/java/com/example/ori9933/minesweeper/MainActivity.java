@@ -1,5 +1,6 @@
 package com.example.ori9933.minesweeper;
 
+import android.content.Intent;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -67,6 +68,10 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
             case R.id.action_level_hard:
                 GameManager.getInstance().setGamesLevel(GameLevel.Hard);
                 StartNewGame(true);
+                return true;
+            case R.id.action_showRecordsView:
+                Intent intent = new Intent(this,RecordsActivity.class);
+                startActivity(intent);
                 return true;
         }
 
