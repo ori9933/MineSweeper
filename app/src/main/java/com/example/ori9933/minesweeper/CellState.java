@@ -2,7 +2,7 @@ package com.example.ori9933.minesweeper;
 
 interface ICellStateChangedListener{
     void onChange();
-    void onEndGame();
+    void onEndGame(boolean isGameWon, CellState errorCell);
 }
 
 public class CellState{
@@ -32,9 +32,9 @@ public class CellState{
             listener.onChange();
     }
 
-    public void raiseEndGame() {
+    public void raiseEndGame(boolean isGameWon, CellState errorCell) {
         if(listener != null)
-            listener.onEndGame();
+            listener.onEndGame(isGameWon,errorCell);
     }
 
     public int getValue() {

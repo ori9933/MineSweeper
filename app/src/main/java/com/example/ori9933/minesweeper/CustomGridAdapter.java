@@ -1,5 +1,6 @@
 package com.example.ori9933.minesweeper;
 
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +15,14 @@ public class CustomGridAdapter extends BaseAdapter {
     private LayoutInflater inflater;
 
 
-    public CustomGridAdapter(LayoutInflater inflater){
+    public CustomGridAdapter(LayoutInflater inflater, Activity context){
         this.inflater = inflater;
         this.cellManagers = new ArrayList<>();
 
         CellState[][] cells = GameManager.getInstance().GetCellsStates();
         for(int i = 0; i < GameManager.GAME_SIZE; i++){
             for (int j =0; j< GameManager.GAME_SIZE; j++){
-                this.cellManagers.add(new CellManager(cells[i][j]));
+                this.cellManagers.add(new CellManager(cells[i][j], context));
             }
         }
     }

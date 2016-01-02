@@ -1,11 +1,7 @@
 package com.example.ori9933.minesweeper;
 
 
-import android.graphics.Point;
-import android.location.Location;
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 
@@ -132,7 +128,7 @@ public class GameManager {
             verifyGameWon();
         }
         else {
-            onGameOver(false);
+            onGameOver(false, cellState);
         }
     }
 
@@ -144,10 +140,10 @@ public class GameManager {
                 }
             }
         }
-        onGameOver(true);
+        onGameOver(true, null);
     }
 
-    private void onGameOver(boolean isGameWon){
+    private void onGameOver(boolean isGameWon, CellState errorCell){
         isGameRunning = false;
         if(gameStatusListener != null){
             gameStatusListener.onGameOver(isGameWon);
@@ -155,7 +151,7 @@ public class GameManager {
 
         for (int i=0;i<GAME_SIZE;i++){
             for(int j=0;j<GAME_SIZE;j++){
-                cells[i][j].raiseEndGame();
+                cells[i][j].raiseEndGame(isGameWon,errorCell);
             }
         }
     }

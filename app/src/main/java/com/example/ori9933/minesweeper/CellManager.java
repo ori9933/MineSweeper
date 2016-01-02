@@ -1,7 +1,16 @@
 package com.example.ori9933.minesweeper;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.RotateAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -10,23 +19,25 @@ import android.widget.TextView;
 
 public class CellManager implements ICellStateChangedListener {
     private CellState cellState;
+    private Activity context;
     private Button button;
     private TextView textView;
     private View convertView;
     private ImageButton imageButton;
     private ImageView imageView;
 
-    public CellManager(CellState cellState){
+    public CellManager(CellState cellState, Activity context){
 
         this.cellState = cellState;
+        this.context = context;
         cellState.register(this);
     }
 
-    public void setView(View convertView) {
+    public void setView(View view) {
 
         if(this.convertView != null)
             return;
-        this.convertView = convertView;
+        this.convertView = view;
 
         button = (Button) convertView.findViewById(R.id.cell_button);
         textView = (TextView) convertView.findViewById(R.id.cell_text);
@@ -44,6 +55,14 @@ public class CellManager implements ICellStateChangedListener {
             @Override
             public boolean onLongClick(View v) {
                 GameManager.getInstance().SetCellMine(cellState);
+
+
+
+
+
+
+
+
                 return true;
             }
         });
@@ -90,7 +109,7 @@ public class CellManager implements ICellStateChangedListener {
     }
 
     @Override
-    public void onEndGame() {
+    public void onEndGame(boolean isGameWon, CellState errorCell) {
         CellErrorStatus error = cellState.getError();
         if(error == CellErrorStatus.Mine){
             button.setVisibility(View.INVISIBLE);
@@ -121,5 +140,57 @@ public class CellManager implements ICellStateChangedListener {
             button.setEnabled(false);
         }
 
+        if(isGameWon == false)
+            GameLostAnimation(errorCell);
+        else
+            GameWonAnimation();
+
+    }
+
+    private void GameWonAnimation() {
+
+        RotateAnimation rotate = new RotateAnimation(0, 360,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                0.5f);
+
+        rotate.setDuration(2000);
+        convertView.setAnimation(rotate);
+    }
+
+    private void GameLostAnimation(CellState errorCell) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        int height = size.y;
+
+
+        int dx= 60;
+        int dy=dx;
+
+        if(errorCell.getRow() > cellState.getRow())
+            dy*=-1;
+        else if(errorCell.getRow() == cellState.getRow())
+            dy = 0;
+
+        if(errorCell.getCol() > cellState.getCol())
+            dx*=-1;
+        else if(errorCell.getCol() == cellState.getCol())
+            dx = 0;
+
+        //explosion animation
+        AnimationSet as = new AnimationSet(true);
+        TranslateAnimation animation = new TranslateAnimation(0, dx, 0, dy);
+        animation.setDuration(500);
+        as.addAnimation(animation);
+
+        //falling down animation
+        TranslateAnimation animation1 = new TranslateAnimation(0, width - convertView.getX() -dx, 0, height - convertView.getY() -dy);
+        animation1.setDuration(1000);
+        animation1.setStartOffset(1500);
+        as.addAnimation(animation1);
+
+        convertView.startAnimation(as);
     }
 }

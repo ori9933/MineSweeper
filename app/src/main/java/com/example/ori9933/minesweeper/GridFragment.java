@@ -20,7 +20,7 @@ public class GridFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_grid, container, false);
         GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
 
-        CustomGridAdapter adapter = new CustomGridAdapter(inflater);
+        CustomGridAdapter adapter = new CustomGridAdapter(inflater, getActivity());
         gridview.setAdapter(adapter);
 
         return rootView;
