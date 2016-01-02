@@ -1,6 +1,11 @@
 package com.example.ori9933.minesweeper;
 
 
+import android.graphics.Point;
+import android.location.Location;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 
@@ -17,6 +22,7 @@ public class GameManager {
     private GameLevel level;
     private int minesLeft;
     private IGameStatusListener gameStatusListener;
+    private boolean isGameRunning = false;
 
 
     private GameManager(){
@@ -55,6 +61,7 @@ public class GameManager {
         if(notify){
             updateCells();
         }
+        isGameRunning = true;
     }
 
     private void updateCells() {
@@ -141,6 +148,7 @@ public class GameManager {
     }
 
     private void onGameOver(boolean isGameWon){
+        isGameRunning = false;
         if(gameStatusListener != null){
             gameStatusListener.onGameOver(isGameWon);
         }
@@ -220,6 +228,48 @@ public class GameManager {
             default:
                 return 10;
         }
+    }
+
+    public void OnOrientationDeviation(){
+        if(isGameRunning == false)
+            return;
+
+        ArrayList<CellState> potentialCells = new ArrayList<CellState>();
+        for (int i=0;i<GAME_SIZE;i++){
+            for(int j=0;j<GAME_SIZE;j++){
+                if( cells[i][j].getValue() == 0 || (cells[i][j].getValue() > 0 &&  cells[i][j].getStatus() == CellStatus.Opened)){
+                    potentialCells.add(cells[i][j]);
+                }
+            }
+        }
+
+        if(potentialCells.size() == 0)
+            return;
+
+        Random rand = new Random();
+        CellState cell = potentialCells.get(rand.nextInt(potentialCells.size()));
+        cell.setValue(CellState.MINE_VALUE);
+        if(cell.getStatus()==CellStatus.Opened)
+            cell.setStatus(CellStatus.Initial);
+        cell.raiseStateChanged();
+
+        for (int i=cell.getRow()-1;i<cell.getRow()+1;i++){
+            if(i<0 || i>=GAME_SIZE)
+                continue;
+            for(int j=cell.getCol()-1;j<cell.getCol()+1;j++){
+                if((i==cell.getRow() & j==cell.getCol()) || j < 0 || j >= GAME_SIZE)
+                    continue;
+                if(cells[i][j].getValue() != CellState.MINE_VALUE){
+                    cells[i][j].setValue(cells[i][j].getValue() + 1);
+                    if(cells[i][j].getStatus()==CellStatus.Opened)
+                        cells[i][j].setStatus(CellStatus.Initial);
+                    cells[i][j].raiseStateChanged();
+                }
+            }
+        }
+
+        this.minesLeft++;
+        onMinesChanged();
     }
 
 }

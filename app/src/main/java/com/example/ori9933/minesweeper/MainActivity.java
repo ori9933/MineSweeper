@@ -1,5 +1,6 @@
 package com.example.ori9933.minesweeper;
 
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +14,7 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
 
     private TextView minesLeftTextView;
     private TextView gameStatusTextView;
+    private GyroscopeSensorListener gyroscopeSensorListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
         gameStatusTextView = (TextView) findViewById(R.id.game_status_text);
 
         GameManager.getInstance().register(this);
+        gyroscopeSensorListener = new GyroscopeSensorListener((SensorManager) getSystemService(SENSOR_SERVICE));
         StartNewGame(false);
 
         Button newGameButton = (Button)findViewById(R.id.new_game_button);
@@ -72,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
     }
 
     private void StartNewGame(boolean notify){
+        gyroscopeSensorListener.Reset();
         GameManager.getInstance().newGame(notify);
         gameStatusTextView.setText("");
     }
