@@ -29,7 +29,7 @@ public class tab_Table extends Fragment {
         LinearLayout.LayoutParams paramsTablerow = (LinearLayout.LayoutParams)tableRow.getLayoutParams();
 
 
-        ArrayList<Record> records = UserRecordsManager.GetAllRecords();
+        ArrayList<Record> records = UserRecordsManager.getInstance().GetAllRecords();
 
         for (Record record: records) {
             TableRow row = CreateTableRow(paramsTablerow);

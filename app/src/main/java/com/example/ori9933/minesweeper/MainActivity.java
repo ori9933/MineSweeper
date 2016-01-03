@@ -1,7 +1,10 @@
 package com.example.ori9933.minesweeper;
 
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,7 +16,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements IGameStatusListener {
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+
+public class MainActivity extends AppCompatActivity implements IGameStatusListener{
 
     private TextView minesLeftTextView;
     private TextView gameStatusTextView;
@@ -21,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
     private LinearLayout recordContainer;
     private TextView scoreTextView;
     private EditText nameTextInput;
+    private LocationProvider locationProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +59,17 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
             @Override
             public void onClick(View v) {
                 recordContainer.setVisibility(View.GONE);
-                UserRecordsManager.SaveRecord(GameManager.getInstance().getLastScore(), nameTextInput.getText().toString());
+                Location location = locationProvider.getLastLocation();
+                double latitude = 0, longitude= 0;
+                if(location != null){
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                }
+                UserRecordsManager.getInstance().SaveRecord(GameManager.getInstance().getLastScore(), nameTextInput.getText().toString(),latitude,longitude);
             }
         });
+
+        locationProvider = new LocationProvider((LocationManager) getSystemService(Context.LOCATION_SERVICE), getBaseContext());
     }
 
     @Override
@@ -113,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
         String message = isGameWon ? "Game Won!" : "Game Lost! :(";
         gameStatusTextView.setText(message);
         int score = GameManager.getInstance().getLastScore();
-        if(isGameWon && UserRecordsManager.isNewHighScore(score)){
+        if(isGameWon && UserRecordsManager.getInstance().isNewHighScore(score)){
             scoreTextView.setText("Congrats! Your score " + score + " is one of the highest scores!");
             recordContainer.setVisibility(View.VISIBLE);
         }
