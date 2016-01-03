@@ -8,4 +8,7 @@
     <string name="menu_normal">Normal</string>
     <string name="menu_hard">Hard</string>
     <string name="new_game">New Game</string>
+    <string name="title_activity_records">RecordsActivity</string>
+    <string name="show_records">Show Records</string>
+    <string name="mines_left">Mines left:</string>
 </resources>

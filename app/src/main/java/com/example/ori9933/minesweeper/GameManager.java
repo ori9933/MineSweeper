@@ -2,6 +2,7 @@ package com.example.ori9933.minesweeper;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 
 
@@ -19,6 +20,8 @@ public class GameManager {
     private int minesLeft;
     private IGameStatusListener gameStatusListener;
     private boolean isGameRunning = false;
+    long gameStartTimeInMili;
+    int lastScore;
 
 
     private GameManager(){
@@ -57,6 +60,8 @@ public class GameManager {
         if(notify){
             updateCells();
         }
+
+        gameStartTimeInMili = System.currentTimeMillis();
         isGameRunning = true;
     }
 
@@ -70,7 +75,7 @@ public class GameManager {
 
     public void openCell(CellState cellState){
         if(cellState.getValue() == 0){
-            spreadSurroundingCells(cellState.getRow(),cellState.getCol());
+            spreadSurroundingCells(cellState.getRow(), cellState.getCol());
         }
         else
         {
@@ -144,7 +149,10 @@ public class GameManager {
     }
 
     private void onGameOver(boolean isGameWon, CellState errorCell){
+        //isGameWon = true;
+
         isGameRunning = false;
+        calculateScore(isGameWon);
         if(gameStatusListener != null){
             gameStatusListener.onGameOver(isGameWon);
         }
@@ -154,6 +162,23 @@ public class GameManager {
                 cells[i][j].raiseEndGame(isGameWon,errorCell);
             }
         }
+    }
+
+    private void calculateScore(boolean isGameWon) {
+        final int MAX_TIME = 1000;
+        final int  POINTS_PER_MINE = 40;
+        if(isGameWon){
+            int secondsPassed = (int)(System.currentTimeMillis() - gameStartTimeInMili) / 1000;
+            int scoreBase = secondsPassed >= MAX_TIME ? 0 : MAX_TIME - secondsPassed;
+            lastScore = scoreBase/2 + getTotalMines()*POINTS_PER_MINE;
+        }
+        else{
+            lastScore = 0;
+        }
+    }
+
+    public int getLastScore(){
+        return lastScore;
     }
 
     private void onMinesChanged(){

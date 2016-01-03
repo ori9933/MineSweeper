@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements IGameStatusListener {
@@ -16,6 +18,9 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
     private TextView minesLeftTextView;
     private TextView gameStatusTextView;
     private GyroscopeSensorListener gyroscopeSensorListener;
+    private LinearLayout recordContainer;
+    private TextView scoreTextView;
+    private EditText nameTextInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +31,9 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
 
         minesLeftTextView = (TextView) findViewById(R.id.mines_left_text);
         gameStatusTextView = (TextView) findViewById(R.id.game_status_text);
+        recordContainer = (LinearLayout) findViewById(R.id.record_container);
+        scoreTextView = (TextView) findViewById(R.id.score_text);
+        nameTextInput = (EditText) findViewById(R.id.name_text_input);
 
         GameManager.getInstance().register(this);
         gyroscopeSensorListener = new GyroscopeSensorListener((SensorManager) getSystemService(SENSOR_SERVICE));
@@ -36,6 +44,15 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
             @Override
             public void onClick(View v) {
                 StartNewGame(true);
+            }
+        });
+
+        Button saveRecordButton = (Button)findViewById(R.id.save_record_button);
+        saveRecordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recordContainer.setVisibility(View.GONE);
+                UserRecordsManager.SaveRecord(GameManager.getInstance().getLastScore(), nameTextInput.getText().toString());
             }
         });
     }
@@ -80,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
     }
 
     private void StartNewGame(boolean notify){
+        recordContainer.setVisibility(View.GONE);
         gyroscopeSensorListener.Reset();
         GameManager.getInstance().newGame(notify);
         gameStatusTextView.setText("");
@@ -94,5 +112,10 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
     public void onGameOver(boolean isGameWon) {
         String message = isGameWon ? "Game Won!" : "Game Lost! :(";
         gameStatusTextView.setText(message);
+        int score = GameManager.getInstance().getLastScore();
+        if(isGameWon && UserRecordsManager.isNewHighScore(score)){
+            scoreTextView.setText("Congrats! Your score " + score + " is one of the highest scores!");
+            recordContainer.setVisibility(View.VISIBLE);
+        }
     }
 }

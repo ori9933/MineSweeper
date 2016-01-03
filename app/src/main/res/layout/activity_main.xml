@@ -22,7 +22,7 @@
             android:id="@+id/mines_left_text"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="Mines left:" />
+            android:text="@string/mines_left" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -42,6 +42,41 @@
             />
     </RelativeLayout>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:id="@+id/record_container"
+        android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/score_text"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:id="@+id/name_text"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="Name:" />
+
+            <EditText
+                android:layout_toRightOf="@+id/name_text"
+                android:id="@+id/name_text_input"
+                android:layout_width="wrap_content"
+                android:width="125dp"
+                android:layout_height="wrap_content" android:minHeight="20dp"/>
+
+            <Button
+                android:id="@+id/save_record_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_toRightOf="@+id/name_text_input"
+                android:text="Save Record"
+                android:minHeight="20dp"/>
+
+        </RelativeLayout>
+    </LinearLayout>
 
     <fragment
         android:name="com.example.ori9933.minesweeper.GridFragment"
