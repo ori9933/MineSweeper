@@ -133,7 +133,8 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
         String message = isGameWon ? "Game Won!" : "Game Lost! :(";
         gameStatusTextView.setText(message);
         int score = GameManager.getInstance().getLastScore();
-        if(isGameWon && UserRecordsManager.getInstance().isNewHighScore(score)){
+        boolean isHighScore = UserRecordsManager.getInstance().isNewHighScore(score);
+        if(isGameWon && isHighScore){
             scoreTextView.setText("Congrats! Your score " + score + " is one of the highest scores!");
             recordContainer.setVisibility(View.VISIBLE);
         }

@@ -149,7 +149,6 @@ public class GameManager {
     }
 
     private void onGameOver(boolean isGameWon, CellState errorCell){
-        //isGameWon = true;
 
         isGameRunning = false;
         calculateScore(isGameWon);

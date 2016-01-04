@@ -39,7 +39,6 @@ public final class UserRecordsManager {
 
 
     public boolean isNewHighScore(int score){
-
         if(records.size() < MAX_HEIGH_SCORES)
             return true;
 
@@ -52,6 +51,8 @@ public final class UserRecordsManager {
     }
 
     public void SaveRecord(int score, String name, double latitude, double longitude){
+        if(records.size() >= MAX_HEIGH_SCORES)
+            records.remove(records.get(records.size()-1));
         records.add(new Record(name,score, latitude, longitude));
         Collections.sort(records);
         saveRecords();
@@ -60,7 +61,7 @@ public final class UserRecordsManager {
 
 
     public static final String PREFS_NAME = "MyPrefsFile";
-    private String Records = "records";
+    private String Records = "recordsData";
     Type collectionType = new TypeToken<List<Record>>(){}.getType();
 
     private SharedPreferences prefs = MyApp.getContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
