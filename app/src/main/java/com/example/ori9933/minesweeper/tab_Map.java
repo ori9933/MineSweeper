@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -49,7 +50,7 @@ public class tab_Map extends Fragment implements OnMapReadyCallback, ActivityCom
 
     @Override
     public void onMapReady(GoogleMap map) {
-        ArrayList<Record> records = UserRecordsManager.getInstance().GetAllRecords();
+        Collection<Record> records = UserRecordsManager.getInstance().GetAllRecords();
         for (Record record: records) {
 
             String address = "";

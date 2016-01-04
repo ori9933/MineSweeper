@@ -26,7 +26,7 @@ public class Record implements Comparable<Record> {
 
     @Override
     public int compareTo(Record another) {
-        return this.score - another.score;
+        return  another.score - this.score;
     }
 
     public double getLatitude() {
