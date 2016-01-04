@@ -1,22 +1,26 @@
 package com.example.ori9933.minesweeper;
 
-import android.content.Context;
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Binder;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 
-public class GyroscopeSensorListener implements SensorEventListener {
-    private SensorManager sManager;
+
+import java.security.Provider;
+
+public class GyroscopeSensorListener extends Service implements SensorEventListener {
     private boolean isLocationInitialized = false;
     float x_roll,y_pitch,z_yaw;
     private final int ALLOWED_OFFSET = 2;
     private final int DELAY = 1000000;
-
-    public GyroscopeSensorListener(SensorManager sManager){
-        this.sManager = sManager;
-        sManager.registerListener(this, sManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),DELAY);
-    }
+    private SensorManager sManager;
+    private final IBinder myBinder = new MyLocalBinder();
 
 
     @Override
@@ -50,5 +54,22 @@ public class GyroscopeSensorListener implements SensorEventListener {
 
     public void Reset() {
         isLocationInitialized = false;
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        if(sManager == null){
+            sManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+            sManager.registerListener(this, sManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),DELAY);
+        }
+        return myBinder;
+    }
+
+
+    public class MyLocalBinder extends Binder {
+        GyroscopeSensorListener getService() {
+            return GyroscopeSensorListener.this;
+        }
     }
 }

@@ -1,11 +1,14 @@
 package com.example.ori9933.minesweeper;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -23,7 +26,6 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
 
     private TextView minesLeftTextView;
     private TextView gameStatusTextView;
-    private GyroscopeSensorListener gyroscopeSensorListener;
     private LinearLayout recordContainer;
     private TextView scoreTextView;
     private EditText nameTextInput;
@@ -43,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
         nameTextInput = (EditText) findViewById(R.id.name_text_input);
 
         GameManager.getInstance().register(this);
-        gyroscopeSensorListener = new GyroscopeSensorListener((SensorManager) getSystemService(SENSOR_SERVICE));
         StartNewGame(false);
 
         Button newGameButton = (Button)findViewById(R.id.new_game_button);
@@ -70,6 +71,9 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
         });
 
         locationProvider = new LocationProvider((LocationManager) getSystemService(Context.LOCATION_SERVICE), getBaseContext());
+
+        Intent intent = new Intent(this, GyroscopeSensorListener.class);
+        bindService(intent, myConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -113,7 +117,8 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
 
     private void StartNewGame(boolean notify){
         recordContainer.setVisibility(View.GONE);
-        gyroscopeSensorListener.Reset();
+        if(isBound)
+            gyroscopeService.Reset();
         GameManager.getInstance().newGame(notify);
         gameStatusTextView.setText("");
     }
@@ -133,4 +138,27 @@ public class MainActivity extends AppCompatActivity implements IGameStatusListen
             recordContainer.setVisibility(View.VISIBLE);
         }
     }
+
+
+
+    GyroscopeSensorListener gyroscopeService;
+    boolean isBound = false;
+
+    private ServiceConnection myConnection = new ServiceConnection() {
+
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            GyroscopeSensorListener.MyLocalBinder binder = (GyroscopeSensorListener.MyLocalBinder) service;
+            gyroscopeService = binder.getService();
+            isBound = true;
+        }
+
+        public void onServiceDisconnected(ComponentName arg0) {
+            isBound = false;
+        }
+    };
+
+
+
+
 }
